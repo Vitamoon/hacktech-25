@@ -4,7 +4,8 @@ import {
   CheckCircleIcon, 
   AlertCircleIcon, 
   LoaderIcon,
-  DatabaseIcon
+  DatabaseIcon,
+  DropletIcon
 } from 'lucide-react';
 import { mockDataSources } from '../data/mockData';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -16,7 +17,6 @@ const DataSources: React.FC = () => {
   const handleRefresh = (sourceId: string) => {
     setRefreshing(sourceId);
     
-    // Simulate API call
     setTimeout(() => {
       setDataSources(
         dataSources.map(source => 
@@ -65,15 +65,15 @@ const DataSources: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Data Sources</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Water Level Sources</h1>
       
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-medium text-gray-900">Connected Data Services</h2>
+          <h2 className="text-lg font-medium text-gray-900">Connected Water Monitoring Services</h2>
           <button
             className="flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
           >
-            <DatabaseIcon className="w-4 h-4 mr-1" />
+            <DropletIcon className="w-4 h-4 mr-1" />
             Add New Source
           </button>
         </div>
@@ -150,7 +150,7 @@ const DataSources: React.FC = () => {
 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Data Integration Status</h2>
+          <h2 className="text-lg font-medium text-gray-900">Water Level Integration Status</h2>
         </div>
         <div className="p-6">
           <div className="space-y-6">

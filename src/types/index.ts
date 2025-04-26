@@ -52,5 +52,16 @@ export interface HousingData {
   City: string;
   Metro: string;
   CountyName: string;
-  [key: string]: string | number; // For dynamic date columns
+  FloodRiskScore?: number;
+  NearestLakeDistance?: number;
+  [key: string]: string | number | undefined;
+}
+
+export interface AreaAnalysis {
+  medianPrice: number;
+  priceChange: number;
+  priceChangePercent: number;
+  floodRiskLevel: 'Low' | 'Moderate' | 'High';
+  nearbyWaterBodies: number;
+  averageWaterDistance: number;
 }
