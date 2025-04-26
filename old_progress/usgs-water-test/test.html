@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water & Housing Map</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+  <style>
+    #map { height: 600px; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // 1. Initialize Leaflet map
+    const map = L.map('map').setView([34.05, -118.25], 6); // center on California
+
+    // 2. Add base tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 3. Fetch USGS JSON time-series data
+    fetch('https://waterservices.usgs.gov/nwis/dv?format=json&stateCd=ca&siteType=LK&siteStatus=all')
+      .then(res => res.json())
+      .then(data => {
+        // 4. Convert to GeoJSON FeatureCollection
+        const features = data.value.timeSeries.map(ts => {
+          const { latitude: lat, longitude: lon } = ts.sourceInfo.geoLocation.geogLocation;
+          const latest = ts.values[0].value[0];
+          return {
+            type: 'Feature',
+            properties: {
+              siteName: ts.sourceInfo.siteName,
+              variable: ts.variable.variableName,
+              unit: ts.variable.unit.unitCode,
+              value: parseFloat(latest.value),
+              dateTime: latest.dateTime
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [lon, lat]
+            }
+          };
+        });
+
+        const geojson = { type: 'FeatureCollection', features };
+
+        // 5. Add GeoJSON layer with circle markers
+        L.geoJSON(geojson, {
+          pointToLayer: (feature, latlng) =>
+            L.circleMarker(latlng, {
+              radius: Math.sqrt(feature.properties.value) / 100,
+              fillColor: '#0077be',
+              color: '#333',
+              weight: 1,
+              fillOpacity: 0.6
+            }),
+          onEachFeature: (feature, layer) => {
+            layer.bindPopup(
+              `<strong>${feature.properties.siteName}</strong><br/>
+               ${feature.properties.variable}: ${feature.properties.value} ${feature.properties.unit}<br/>
+               ${new Date(feature.properties.dateTime).toLocaleDateString()}`
+            );
+          }
+        }).addTo(map);
+      })
+      .catch(err => console.error('USGS fetch error:', err));
+
+    // TODO: Fetch Zillow data and add another layer similarly
+  </script>
+</body>
+</html>
