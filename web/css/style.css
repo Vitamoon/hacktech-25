@@ -437,7 +437,6 @@ About Us
 
 .about-margin {
   padding-top: 3.2rem;
-  background-color: rgb(94, 174, 166);
   padding-bottom: 4rem;
 }
 
@@ -453,6 +452,10 @@ About Us
 
 footer span {
   font-size: 1.8rem;
+}
+
+.background-back {
+  background-color: rgb(94, 174, 166);
 }
 
 /* 
@@ -483,9 +486,13 @@ footer {
 }
 
 footer span {
-  color: #444;
+  color: #575757;
 }
 
 footer p {
   font-size: 1.2rem;
+}
+
+footer img {
+  filter: brightness(80%);
 }
