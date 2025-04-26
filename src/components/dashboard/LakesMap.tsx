@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+// Import Rectangle
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, Rectangle } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { useDataContext } from '../../context/DataContext';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import L, { LatLngBoundsExpression } from 'leaflet'; // Import LatLngBoundsExpression
 import Papa from 'papaparse';
 
 // Fix Leaflet marker icon issue in React
@@ -145,6 +146,97 @@ const USGSLakesOverlay: React.FC = () => {
   );
 };
 
+// Placeholder colors for alerts
+const highAlertColor = '#FFA500'; // Orange
+const lowAlertColor = '#FFFFE0';  // Pale Yellow
+
+// --- NEW COMPONENT: ZipCodeAlertOverlay ---
+interface AlertOverlayData {
+  bounds: LatLngBoundsExpression;
+  color: string;
+  zipCode: string; // Or other identifier
+}
+
+const ZipCodeAlertOverlay: React.FC = () => {
+  const { lakes } = useDataContext();
+  const [alertOverlays, setAlertOverlays] = useState<AlertOverlayData[]>([]);
+  const map = useMap();
+
+  useEffect(() => {
+    const overlays: AlertOverlayData[] = [];
+
+    lakes.forEach(lake => {
+      const isHighAlert = lake.currentLevel > lake.criticalHighLevel;
+      const isLowAlert = lake.currentLevel < lake.criticalLowLevel;
+
+      if (isHighAlert || isLowAlert) {
+        const alertType = isHighAlert ? 'high' : 'low';
+        const color = isHighAlert ? highAlertColor : lowAlertColor;
+
+        // --- PLACEHOLDER LOGIC ---
+        // 1. Identify Zip Codes: Determine which zip codes fall within the
+        //    alert radius for this lake (e.g., based on distance calculation
+        //    or a predefined mapping). This might involve fetching data or
+        //    using a spatial library.
+        //    Example: const affectedZipCodes = findZipCodesNear(lake.location, alertType);
+
+        // 2. Get Boundaries: For each affected zip code, you need its
+        //    geographical boundary (e.g., from a GeoJSON file or API).
+        //    Example: const zipBoundaryGeoJSON = await fetchZipBoundary(zipCode);
+
+        // 3. Create Bounds: Convert the GeoJSON boundary into Leaflet's
+        //    LatLngBoundsExpression format.
+        //    Example: const bounds = L.geoJSON(zipBoundaryGeoJSON).getBounds();
+
+        // 4. Add to Overlays: Push the data to the overlays array.
+        //    overlays.push({ bounds, color, zipCode });
+
+        // --- MOCK EXAMPLE (Remove in production) ---
+        // This is just a hardcoded example rectangle near the lake's location.
+        // Replace this with actual boundary logic.
+        if (isHighAlert) {
+          const mockBounds: LatLngBoundsExpression = [
+            [lake.location.lat - 0.05, lake.location.lng - 0.05],
+            [lake.location.lat + 0.05, lake.location.lng + 0.05]
+          ];
+          overlays.push({ bounds: mockBounds, color: highAlertColor, zipCode: 'HIGH_MOCK' });
+        } else if (isLowAlert) {
+           const mockBounds: LatLngBoundsExpression = [
+            [lake.location.lat - 0.1, lake.location.lng - 0.1],
+            [lake.location.lat + 0.1, lake.location.lng + 0.1]
+          ];
+           overlays.push({ bounds: mockBounds, color: lowAlertColor, zipCode: 'LOW_MOCK' });
+        }
+        // --- END MOCK EXAMPLE ---
+      }
+    });
+
+    setAlertOverlays(overlays);
+
+  }, [lakes, map]); // Include map if needed for boundary calculations
+
+  return (
+    <>
+      {alertOverlays.map((overlay, index) => (
+        <Rectangle
+          key={`alert-${overlay.zipCode}-${index}`}
+          bounds={overlay.bounds}
+          pathOptions={{
+            fillColor: overlay.color,
+            color: overlay.color, // Border color same as fill
+            weight: 1,
+            fillOpacity: 0.4,
+          }}
+        >
+          <Popup>Zip Code: {overlay.zipCode} ({overlay.color === highAlertColor ? 'High' : 'Low'} Alert)</Popup>
+        </Rectangle>
+      ))}
+    </>
+  );
+};
+// --- END NEW COMPONENT ---
+
+
 // Housing data overlay component
 const HousingDataOverlay: React.FC = () => {
   const [housingData, setHousingData] = useState<any[]>([]);
@@ -230,28 +322,29 @@ const LakesMap: React.FC = () => {
   const navigate = useNavigate();
   
   const handleMarkerClick = (lakeId: string) => {
-    navigate(`/lake/${lakeId}`);
+    // Corrected path to navigate to lake details
+    navigate(`/lakes/${lakeId}`);
   };
-  
+
   // Calculate center of the map based on all lakes
   const defaultCenter = [39.8, -98.6]; // Center of US
-  
+
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
-      <MapContainer 
-        center={defaultCenter as [number, number]} 
-        zoom={4} 
+      <MapContainer
+        center={defaultCenter as [number, number]}
+        zoom={4}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
+
         {/* Display our known lakes */}
         {lakes.map(lake => (
-          <Marker 
-            key={lake.id} 
+          <Marker
+            key={lake.id}
             position={[lake.location.lat, lake.location.lng]}
             eventHandlers={{
               click: () => handleMarkerClick(lake.id)
@@ -260,19 +353,21 @@ const LakesMap: React.FC = () => {
             <Popup>
               <div className="text-sm">
                 <h3 className="font-bold text-blue-700">{lake.name}</h3>
-                <p>Current Level / Reservoir Size: {lake.currentLevel.toFixed(2)} ft</p>
+                {/* Updated Popup Content */}
+                <p>Current Level: {lake.currentLevel.toFixed(2)} ft</p>
+                <p>Normal Level: {lake.normalLevel.toFixed(2)} ft</p>
                 <p className={`${
-                  lake.currentLevel > lake.criticalHighLevel 
-                    ? 'text-red-600' 
-                    : lake.currentLevel < lake.criticalLowLevel 
-                    ? 'text-orange-600' 
+                  lake.currentLevel > lake.criticalHighLevel
+                    ? 'text-red-600'
+                    : lake.currentLevel < lake.criticalLowLevel
+                    ? 'text-orange-600'
                     : 'text-green-600'
                 }`}>
                   Status: {
-                    lake.currentLevel > lake.criticalHighLevel 
-                      ? 'High' 
-                      : lake.currentLevel < lake.criticalLowLevel 
-                      ? 'Low' 
+                    lake.currentLevel > lake.criticalHighLevel
+                      ? 'High'
+                      : lake.currentLevel < lake.criticalLowLevel
+                      ? 'Low'
                       : 'Normal'
                   }
                 </p>
@@ -286,17 +381,18 @@ const LakesMap: React.FC = () => {
             </Popup>
           </Marker>
         ))}
-        
-        {/* Circle overlay representing lake sizes */}
+
+        {/* Circle overlay representing lake sizes (optional, can be removed if redundant) */}
+        {/*
         {lakes.map(lake => (
           <Circle
             key={`circle-${lake.id}`}
             center={[lake.location.lat, lake.location.lng]}
             radius={Math.sqrt(lake.surfaceArea) * 500} // Scale circle based on surface area
             pathOptions={{
-              fillColor: lake.currentLevel > lake.criticalHighLevel 
+              fillColor: lake.currentLevel > lake.criticalHighLevel
                 ? '#ef4444' // red
-                : lake.currentLevel < lake.criticalLowLevel 
+                : lake.currentLevel < lake.criticalLowLevel
                 ? '#f97316' // orange
                 : '#22c55e', // green
               fillOpacity: 0.4,
@@ -305,13 +401,17 @@ const LakesMap: React.FC = () => {
             }}
           />
         ))}
-        
+        */}
+
         {/* Housing Data Overlay */}
         <HousingDataOverlay />
-        
+
         {/* USGS Lakes Overlay */}
         <USGSLakesOverlay />
-        
+
+        {/* --- ADDED Zip Code Alert Overlay --- */}
+        <ZipCodeAlertOverlay />
+
         {/* Map updater to fit bounds */}
         <MapUpdater lakes={lakes} />
       </MapContainer>

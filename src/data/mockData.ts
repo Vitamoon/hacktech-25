@@ -231,7 +231,7 @@ export const mockLakes: Lake[] = [
     normalLevel: 176.5,
     criticalHighLevel: 177.5,
     criticalLowLevel: 175.5,
-    surfaceArea: 58000,
+    surfaceArea: 58030,
     dataSource: 'USGS'
   },
   {

@@ -7,26 +7,31 @@ import StatsCard from '../components/dashboard/StatsCard';
 import LakeLevelChart from '../components/dashboard/LakeLevelChart';
 
 const Dashboard: React.FC = () => {
-  // Destructure refreshData here
   const { lakes, readings, forecasts, loading, error, refreshData } = useDataContext();
-  // Removed alerts from useAlertContext
   const [selectedTimeRange, setSelectedTimeRange] = useState<'7d' | '30d' | '90d' | '1y' | 'all'>('30d');
   
-  // Calculate overall statistics
   const calculateStats = () => {
     let totalLakes = lakes.length;
-    let criticalHighCount = 0;
-    let criticalLowCount = 0;
+    let highAlertZipCodes = new Set();
+    let lowAlertZipCodes = new Set();
     let changingTrend = 0;
     
     lakes.forEach(lake => {
-      if (lake.currentLevel > lake.criticalHighLevel) {
-        criticalHighCount++;
-      } else if (lake.currentLevel < lake.criticalLowLevel) {
-        criticalLowCount++;
+      const innerRadius = lake.surfaceArea ? Math.sqrt(lake.surfaceArea / Math.PI) : 5; // km
+      const outerRadius = innerRadius * 2; // Double radius for low alert zone
+      
+      const zipCodesInRadius = getZipCodesInRadius(lake.location, innerRadius);
+      const zipCodesInOuterRadius = getZipCodesInRadius(lake.location, outerRadius);
+      
+      if (lake.currentLevel > lake.criticalHighLevel || lake.currentLevel < lake.criticalLowLevel) {
+        zipCodesInRadius.forEach(zip => highAlertZipCodes.add(zip));
+        zipCodesInOuterRadius.forEach(zip => {
+          if (!highAlertZipCodes.has(zip)) {
+            lowAlertZipCodes.add(zip);
+          }
+        });
       }
       
-      // Check if there's a significant trend in the last 7 days
       const lakeReadings = readings[lake.id];
       if (lakeReadings && lakeReadings.length >= 7) {
         const recentReadings = lakeReadings.slice(-7);
@@ -50,23 +55,32 @@ const Dashboard: React.FC = () => {
     
     return {
       totalLakes,
-      criticalHighCount,
-      criticalLowCount,
+      highAlertZipCodes: highAlertZipCodes.size,
+      lowAlertZipCodes: lowAlertZipCodes.size,
       changingTrend,
     };
   };
-  
+
+  const getZipCodesInRadius = (location: { lat: number, lng: number }, radius: number) => {
+    const mockZipCodes = new Set<string>();
+    const baseZip = Math.floor(Math.abs(location.lat * location.lng * 100)) % 90000 + 10000;
+    const count = Math.floor(radius);
+    
+    for (let i = 0; i < count; i++) {
+      mockZipCodes.add((baseZip + i).toString());
+    }
+    
+    return Array.from(mockZipCodes);
+  };
+
   const stats = calculateStats();
   
-  // Find a featured lake (one with the most extreme level relative to normal)
   const getFeaturedLake = () => {
     if (lakes.length === 0) return null;
     
-    // Always return Lake Michigan if it exists
     const lakeMichigan = lakes.find(lake => lake.name === "Lake Michigan");
     if (lakeMichigan) return lakeMichigan;
     
-    // Fallback to original logic if Lake Michigan is not found
     let extremeLake = lakes[0];
     let maxDifference = Math.abs(lakes[0].currentLevel - lakes[0].normalLevel) / lakes[0].normalLevel;
     
@@ -109,17 +123,15 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="mt-4 md:mt-0">
           <button
-            // Call refreshData on click
             onClick={refreshData}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            disabled={loading} // Optionally disable button while loading
+            disabled={loading}
           >
             {loading ? 'Refreshing...' : 'Refresh Data'}
           </button>
         </div>
       </div>
 
-      {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Total Monitored Lakes"
@@ -128,18 +140,18 @@ const Dashboard: React.FC = () => {
           color="blue"
         />
         <StatsCard
-          title="High Alert Lakes"
-          value={stats.criticalHighCount}
-          trend={stats.criticalHighCount > 0 ? 100 : 0}
-          trendLabel="Requires attention"
+          title="High Alert Zip Codes"
+          value={stats.highAlertZipCodes}
+          trend={stats.highAlertZipCodes > 0 ? 100 : 0}
+          trendLabel="In lake danger zones"
           icon={<AlertTriangle className="w-6 h-6" />}
           color="red"
         />
         <StatsCard
-          title="Low Alert Lakes"
-          value={stats.criticalLowCount}
-          trend={stats.criticalLowCount > 0 ? 100 : 0}
-          trendLabel="Requires attention"
+          title="Low Alert Zip Codes"
+          value={stats.lowAlertZipCodes}
+          trend={stats.lowAlertZipCodes > 0 ? 100 : 0}
+          trendLabel="In extended risk zones"
           icon={<AlertTriangle className="w-6 h-6" />}
           color="orange"
         />
@@ -151,16 +163,12 @@ const Dashboard: React.FC = () => {
         />
       </div>
       
-      {/* Map and Alerts */}
-      {/* Updated grid to make map full width */}
       <div className="grid grid-cols-1 gap-6">
-        <div className="lg:col-span-1"> {/* Changed from lg:col-span-2 */}
+        <div className="lg:col-span-1">
           <LakesMap />
         </div>
-        {/* Removed AlertsList component */}
       </div>
       
-      {/* Featured Lake Chart */}
       {featuredLake && (
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -193,7 +201,6 @@ const Dashboard: React.FC = () => {
         </div>
       )}
       
-      {/* Lake Cards */}
       <div>
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Monitored Lakes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

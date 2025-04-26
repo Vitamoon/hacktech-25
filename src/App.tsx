@@ -16,7 +16,6 @@ function App() {
   };
 
   return (
-    // Removed AlertProvider wrapper
     <DataProvider>
       <Router>
         <div className="flex h-screen bg-gray-100">
@@ -35,7 +34,6 @@ function App() {
         </div>
       </Router>
     </DataProvider>
-    // Removed closing AlertProvider tag
   );
 }
 
