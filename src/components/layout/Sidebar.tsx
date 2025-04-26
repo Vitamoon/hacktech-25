@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { BarChart2, Home, MapPin, AlertCircle, Database, FileText } from 'lucide-react';
+import { Home, MapPin, BarChart2 } from 'lucide-react'; // Removed AlertCircle, Database, FileText
 
 interface SidebarProps {
   isOpen: boolean;
@@ -67,45 +67,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               <span>Housing Data</span>
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/alerts"
-              className={({ isActive }) =>
-                `flex items-center px-4 py-3 mt-1 transition-colors rounded-md ${
-                  isActive ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700'
-                }`
-              }
-            >
-              <AlertCircle className="w-5 h-5 mr-3" />
-              <span>Alerts</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/data-sources"
-              className={({ isActive }) =>
-                `flex items-center px-4 py-3 mt-1 transition-colors rounded-md ${
-                  isActive ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700'
-                }`
-              }
-            >
-              <Database className="w-5 h-5 mr-3" />
-              <span>Data Sources</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/reports"
-              className={({ isActive }) =>
-                `flex items-center px-4 py-3 mt-1 transition-colors rounded-md ${
-                  isActive ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700'
-                }`
-              }
-            >
-              <FileText className="w-5 h-5 mr-3" />
-              <span>Reports</span>
-            </NavLink>
-          </li>
+          {/* Removed Alerts NavLink */}
+          {/* Removed Data Sources NavLink */}
+          {/* Removed Reports NavLink */}
         </ul>
       </nav>
       <div className="flex-shrink-0 p-4 mt-auto border-t border-blue-700">

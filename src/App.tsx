@@ -5,38 +5,37 @@ import Header from './components/layout/Header';
 import Dashboard from './pages/Dashboard';
 import Housing from './pages/Housing';
 import LakeDetails from './pages/LakeDetails';
-import { AlertProvider } from './context/AlertContext';
+// Removed AlertProvider import
 import { DataProvider } from './context/DataContext';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
   return (
-    <Router>
-      <DataProvider>
-        <AlertProvider>
-          <div className="flex h-screen bg-gray-50">
-            <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Header toggleSidebar={toggleSidebar} />
-              <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
-                <div className="container px-4 py-6 mx-auto">
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/lake/:id" element={<LakeDetails />} />
-                    <Route path="/housing" element={<Housing />} />
-                  </Routes>
-                </div>
-              </main>
-            </div>
+    // Removed AlertProvider wrapper
+    <DataProvider>
+      <Router>
+        <div className="flex h-screen bg-gray-100">
+          <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <div className="flex flex-col flex-1 overflow-hidden">
+            <Header toggleSidebar={toggleSidebar} />
+            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/housing" element={<Housing />} />
+                <Route path="/lakes/:id" element={<LakeDetails />} />
+                {/* Removed routes for /alerts, /data-sources, /reports */}
+              </Routes>
+            </main>
           </div>
-        </AlertProvider>
-      </DataProvider>
-    </Router>
+        </div>
+      </Router>
+    </DataProvider>
+    // Removed closing AlertProvider tag
   );
 }
 

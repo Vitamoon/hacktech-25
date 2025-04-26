@@ -34,8 +34,9 @@ const Housing: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-800">Housing Price Data</h1>
         <p className="text-gray-600">Search and analyze housing prices by ZIP code, city, or state</p>
       </div>
-      
-      {/* CSV file location information */}
+
+      {/* CSV file location information - REMOVED */}
+      {/*
       <div className="bg-blue-50 p-4 rounded-lg">
         <div className="flex items-start">
           <Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
@@ -48,7 +49,8 @@ const Housing: React.FC = () => {
           </div>
         </div>
       </div>
-      
+      */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
           <HousingSearchForm onSearch={handleSearch} />
@@ -86,7 +88,9 @@ const Housing: React.FC = () => {
               )}
             </div>
           )}
-          
+
+          {/* Featured Locations - REMOVED */}
+          {/*
           {!searchQuery && housingData.length > 0 && (
             <div className="bg-white rounded-lg shadow-md p-4">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -104,6 +108,7 @@ const Housing: React.FC = () => {
               </div>
             </div>
           )}
+          */}
         </div>
       </div>
       

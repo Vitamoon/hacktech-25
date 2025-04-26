@@ -1,14 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Lake, WaterLevelReading, LakeForecast, DataSource, HousingData } from '../types';
-import { mockLakes, mockReadings, mockForecasts, mockDataSources } from '../data/mockData';
-import { fetchUSGSLakeData } from '../services/usgsService';
-import { parseHousingData } from '../services/housingService';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { Lake, WaterLevelReading, LakeForecast, HousingData, DataSource } from '../types'; // Keep DataSource if needed elsewhere, otherwise remove
+import { mockLakes, mockReadings, mockForecasts /* removed mockDataSources */ } from '../data/mockData';
+// Corrected import path
+import { fetchUSGSLakeData, parseHousingData } from '../utils/dataLoaders.ts';
 
 interface DataContextProps {
   lakes: Lake[];
   readings: Record<string, WaterLevelReading[]>;
   forecasts: Record<string, LakeForecast[]>;
-  dataSources: DataSource[];
+  // Removed dataSources property
   housingData: HousingData[];
   loading: boolean;
   error: string | null;
@@ -34,7 +34,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [lakes, setLakes] = useState<Lake[]>(mockLakes);
   const [readings, setReadings] = useState<Record<string, WaterLevelReading[]>>(mockReadings);
   const [forecasts, setForecasts] = useState<Record<string, LakeForecast[]>>(mockForecasts);
-  const [dataSources, setDataSources] = useState<DataSource[]>(mockDataSources);
+  // Removed dataSources state
   const [housingData, setHousingData] = useState<HousingData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // In a real app, these would be real API calls
       // For now, we're using mock data and adding USGS data
-      const usgsData = await fetchUSGSLakeData();
+      const usgsData = await fetchUSGSLakeData(); // This function comes from the imported file
       
       // Merge mock data with real USGS data
       const updatedLakes = [...lakes, ...usgsData];
@@ -53,8 +53,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Load housing data from CSV
       // In a real app, this would parse an actual CSV file
-      await loadHousingData();
-      
+      await loadHousingData(); // This function comes from the imported file
+
       setLoading(false);
     } catch (err) {
       setError('Failed to refresh data');
@@ -67,7 +67,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // This would be replaced with actual CSV parsing in a real app
       // For now, we'll use a mock implementation
-      const data = await parseHousingData();
+      const data = await parseHousingData(); // This function comes from the imported file
       setHousingData(data);
     } catch (err) {
       console.error('Failed to load housing data', err);
@@ -98,7 +98,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lakes,
         readings,
         forecasts,
-        dataSources,
+        // Removed dataSources from value
         housingData,
         loading,
         error,

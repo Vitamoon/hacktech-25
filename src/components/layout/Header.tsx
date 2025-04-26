@@ -1,14 +1,13 @@
 import React from 'react';
 import { Bell, Settings } from 'lucide-react';
-import { useAlertContext } from '../../context/AlertContext';
+// Removed useAlertContext import
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
-  const { alerts } = useAlertContext();
-  const unreadAlerts = alerts.filter(alert => !alert.isRead).length;
+  // Removed useAlertContext call and unreadAlerts calculation
 
   return (
     <header className="sticky top-0 z-10 bg-white shadow-sm">
@@ -39,11 +38,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
           <div className="relative">
             <button className="p-1 text-gray-500 rounded-full hover:text-blue-600 focus:outline-none">
               <Bell size={20} />
-              {unreadAlerts > 0 && (
-                <span className="absolute top-0 right-0 w-4 h-4 text-xs text-white bg-red-500 rounded-full flex items-center justify-center">
-                  {unreadAlerts}
-                </span>
-              )}
+              {/* Removed unread alerts badge */}
             </button>
           </div>
           <button className="p-1 text-gray-500 rounded-full hover:text-blue-600 focus:outline-none">

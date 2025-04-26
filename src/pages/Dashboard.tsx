@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Droplet, TrendingUp, Info, AlertTriangle } from 'lucide-react';
+import { Droplet, TrendingUp, AlertTriangle } from 'lucide-react'; // Removed Info
 import { useDataContext } from '../context/DataContext';
-import { useAlertContext } from '../context/AlertContext';
+// Removed useAlertContext import
 import LakesMap from '../components/dashboard/LakesMap';
 import LakeSummaryCard from '../components/dashboard/LakeSummaryCard';
 import StatsCard from '../components/dashboard/StatsCard';
-import AlertsList from '../components/dashboard/AlertsList';
+// Removed AlertsList import
 import LakeLevelChart from '../components/dashboard/LakeLevelChart';
 
 const Dashboard: React.FC = () => {
-  const { lakes, readings, forecasts, loading, error } = useDataContext();
-  const { alerts } = useAlertContext();
+  // Destructure refreshData here
+  const { lakes, readings, forecasts, loading, error, refreshData } = useDataContext();
+  // Removed alerts from useAlertContext
   const [selectedTimeRange, setSelectedTimeRange] = useState<'7d' | '30d' | '90d' | '1y' | 'all'>('30d');
   
   // Calculate overall statistics
@@ -105,14 +106,16 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="mt-4 md:mt-0">
           <button
-            onClick={() => {/* Refresh data */}}
+            // Call refreshData on click
+            onClick={refreshData}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            disabled={loading} // Optionally disable button while loading
           >
-            Refresh Data
+            {loading ? 'Refreshing...' : 'Refresh Data'}
           </button>
         </div>
       </div>
-      
+
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
@@ -146,13 +149,12 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* Map and Alerts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      {/* Updated grid to make map full width */}
+      <div className="grid grid-cols-1 gap-6">
+        <div className="lg:col-span-1"> {/* Changed from lg:col-span-2 */}
           <LakesMap />
         </div>
-        <div className="lg:col-span-1">
-          <AlertsList />
-        </div>
+        {/* Removed AlertsList component */}
       </div>
       
       {/* Featured Lake Chart */}
