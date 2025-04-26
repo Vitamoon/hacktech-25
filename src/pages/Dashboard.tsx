@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Droplet, TrendingUp, AlertTriangle } from 'lucide-react'; // Removed Info
+import { Droplet, TrendingUp, AlertTriangle } from 'lucide-react';
 import { useDataContext } from '../context/DataContext';
-// Removed useAlertContext import
 import LakesMap from '../components/dashboard/LakesMap';
 import LakeSummaryCard from '../components/dashboard/LakeSummaryCard';
 import StatsCard from '../components/dashboard/StatsCard';
-// Removed AlertsList import
 import LakeLevelChart from '../components/dashboard/LakeLevelChart';
 
 const Dashboard: React.FC = () => {
@@ -64,6 +62,11 @@ const Dashboard: React.FC = () => {
   const getFeaturedLake = () => {
     if (lakes.length === 0) return null;
     
+    // Always return Lake Michigan if it exists
+    const lakeMichigan = lakes.find(lake => lake.name === "Lake Michigan");
+    if (lakeMichigan) return lakeMichigan;
+    
+    // Fallback to original logic if Lake Michigan is not found
     let extremeLake = lakes[0];
     let maxDifference = Math.abs(lakes[0].currentLevel - lakes[0].normalLevel) / lakes[0].normalLevel;
     

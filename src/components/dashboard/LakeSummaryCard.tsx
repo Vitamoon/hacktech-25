@@ -28,9 +28,14 @@ const LakeSummaryCard: React.FC<LakeSummaryCardProps> = ({ lake }) => {
   const diffColor = normalDiff > 0 ? 'text-red-600' : 'text-blue-600';
   
   // Convert surface area to appropriate units
-  const areaText = lake.surfaceArea > 1000 
-    ? `${(lake.surfaceArea / 1000).toFixed(1)} thousand km²` 
-    : `${lake.surfaceArea} km²`;
+  // Convert surface area from km² to ft²
+  const areaText = (() => {
+    const sqFeet = lake.surfaceArea * 10764; // 1 km² = 10,764 ft²
+    if (sqFeet > 1000000) {
+      return `${(sqFeet / 1000000).toFixed(1)} million ft²`;
+    }
+    return `${Math.round(sqFeet).toLocaleString()} ft²`;
+  })();
   
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
