@@ -21,12 +21,12 @@ Paragraph default: 1.6
 
 - Primary: #e67e22
 - Tints:
-#fdf2e9
-#fae5d3
+#fcffbf
+#fcffc5
 #eb984e
 
 - Shades: 
-#cf711f
+#b4d9d9
 #45260a
 
 - Accents:
@@ -55,6 +55,15 @@ Medium: 11px
 */
 
 /* 
+########
+  IMAGE
+#########
+*/
+
+/* Width: 1523
+Height: 1078 */
+
+/* 
 #############
    GENERAL
 #############
@@ -77,6 +86,27 @@ body {
   color: #393939;
 }
 
+.btn--cta:link,
+.btn--cta:visited {
+  border-radius: 5px;
+  background-color: #c8f1f1;
+  color: #506060;
+  padding: 1.6rem 2.4rem;
+  font-weight: 600;
+}
+
+.btn--cta:hover,
+.btn--cta:active {
+  color: #c8f1f1;
+  background-color: #a0c1c1;
+}
+
+/* 
+#############
+   HEADER
+#############
+*/
+
 .logo {
   height: 2.2rem;
 }
@@ -85,9 +115,148 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fdf2e9;
+  background-color: #b4d9d9;
 
-  /* Because we want header to be sticky later */
   height: 9.6rem;
   padding: 0 4.8rem;
+
+  /* transform: all 3s; */
+}
+
+.main-nav-list {
+  list-style: none;
+  display: flex;
+  gap: 3.5rem;
+}
+
+.main-nav-link {
+  text-decoration: none;
+  color: #444;
+  border-radius: 5px;
+  font-size: 1.8rem;
+  word-spacing: -0.1rem;
+  font-weight: 500;
+}
+
+.main-nav-link:link,
+.main-nav-link:visited {
+  /* background-color: #b4d9d9; */
+}
+
+.main-nav-link:hover,
+.main-nav-link:active {
+  color: #696969;
+}
+
+.nav-cta:link,
+.nav-cta:visited {
+  background-color: #c8f1f1;
+  color: #506060;
+  padding: 1.6rem 2.4rem;
+  font-weight: 600;
+}
+
+.nav-cta:hover,
+.nav-cta:active {
+  color: #c8f1f1;
+  background-color: #a0c1c1;
+}
+
+/* 
+#############
+   HERO-SECTION
+#############
+*/
+
+.hero-section {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0 3.2rem;
+  background-color: rgb(94, 174, 166);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.hero-img img {
+  width: 100%;
+  /* max-height: 30rem; */
+}
+
+.hero-text {
+  color: #313131;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 2rem;
+  justify-content: center;
+  padding: 2rem 3rem;
+  font-weight: 700;
+}
+
+.hero-section-back {
+  /* padding-top: 1rem; */
+  background-color: #c3e1e1;
+}
+
+.hero-h1 {
+  font-size: 5rem;
+  line-height: 5rem;
+  justify-self: center;
+  align-self: end;
+}
+
+.hero-p {
+  font-size: 2rem;
+  line-height: 2rem;
+  color: #3b3b3b;
+}
+
+.hero-desc {
+  display: grid;
+  grid-template-rows: 10rem 1fr;
+}
+
+.btn-holder {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.5rem;
+  gap: 1rem;
+  align-items: center;
+  font-size: 2.75rem;
+}
+
+.btn {
+  text-decoration: none;
+  color: #444;
+  padding: 1.2rem 2rem;
+}
+
+.btn--begin:link,
+.btn--begin:visited {
+  background-color: #a0c1c1;
+  border-radius: 5px;
+}
+
+.btn--begin:link,
+.btn--begin:visited {
+  background-color: #a0c1c1;
+  border-radius: 5px;
+}
+
+.btn--learn:link,
+.btn--learn:visited {
+  color: #444;
+  font-size: 1.5rem;
+}
+
+.btn--learn:link,
+.btn--learn:visited {
+  color: #3d3d3d;
+}
+
+.btn--learn:hover,
+.btn--learn:active {
+  color: #696969;
 }
