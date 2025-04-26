@@ -275,12 +275,11 @@ HOW IT WORKS
   padding: 2rem 3rem;
 }
 
-.works-container h3 {
+.works-title {
   display: flex;
   justify-content: center;
   font-size: 3.6rem;
   letter-spacing: -0.1rem;
-  font-weight: 500;
 }
 
 .explanations {
@@ -340,4 +339,127 @@ HOW IT WORKS
 
 .second-explanation {
   grid-column: 2 / -1;
+}
+
+/* 
+#########
+About Us
+########
+*/
+
+.accordion {
+  max-width: 90rem;
+  margin: 3rem auto;
+
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.item {
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.1);
+  padding: 2.4rem;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  column-gap: 2.4rem;
+  row-gap: 3.2rem;
+  align-items: center;
+  background-color: #fff;
+}
+.number,
+.text {
+  font-size: 2.4rem;
+  font-weight: 500;
+  /* color: #087f5b; */
+}
+
+.number {
+  color: #ced4da;
+}
+
+.hidden-box {
+  grid-column: 2;
+  display: none;
+}
+
+.hidden-box p {
+  line-height: 1.6;
+  margin-bottom: 2.4rem;
+}
+
+.hidden-box ul {
+  color: #868e96;
+  margin-left: 2rem;
+  display: flex;
+  font-size: 1.6rem;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  stroke: #087f5b;
+}
+
+.open {
+  border-top: 4px solid #087f5b;
+}
+
+.open .hidden-box {
+  display: block;
+}
+
+.open .number,
+.open .text {
+  color: #087f5b;
+}
+
+.about-margin {
+  padding-top: 3.2rem;
+  background-color: rgb(94, 174, 166);
+  padding-bottom: 4rem;
+}
+
+.icon--accord {
+  cursor: pointer;
+}
+
+.logo-div a {
+  display: flex;
+  justify-content: center;
+  vertical-align: center;
+}
+
+/* 
+#######
+FOOTER
+######
+*/
+
+footer {
+  display: block; /* Make sure it's displayed */
+  position: relative; /* Ensure it stays within the flow of the page */
+  background-color: #f1f1f1; /* Add a background to ensure it's visible */
+  padding: 20px;
+  color: black; /* Ensure the text color is visible */
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-text {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 2.4rem;
+}
+
+footer p {
+  font-size: 1.2rem;
 }
