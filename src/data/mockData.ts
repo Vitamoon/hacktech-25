@@ -268,28 +268,6 @@ export const mockLakes: Lake[] = [
     dataSource: 'USGS'
   },
   {
-    id: 'lake-mead',
-    name: 'Lake Mead',
-    location: { lat: 36.1, lng: -114.4 },
-    currentLevel: 1055.0,
-    normalLevel: 1090.0,
-    criticalHighLevel: 1220.0,
-    criticalLowLevel: 1050.0,
-    surfaceArea: 640,
-    dataSource: 'USGS'
-  },
-  {
-    id: 'lake-powell',
-    name: 'Lake Powell',
-    location: { lat: 37.1, lng: -111.2 },
-    currentLevel: 3564.0,
-    normalLevel: 3600.0,
-    criticalHighLevel: 3700.0,
-    criticalLowLevel: 3525.0,
-    surfaceArea: 658,
-    dataSource: 'USGS'
-  },
-  {
     id: 'lake-okeechobee',
     name: 'Lake Okeechobee',
     location: { lat: 26.9, lng: -80.8 },

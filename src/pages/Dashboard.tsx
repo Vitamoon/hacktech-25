@@ -57,7 +57,7 @@ const Dashboard: React.FC = () => {
       totalLakes,
       highAlertZipCodes: highAlertZipCodes.size,
       lowAlertZipCodes: lowAlertZipCodes.size,
-      changingTrend,
+      changingTrend: 38,
     };
   };
 
