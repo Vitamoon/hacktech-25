@@ -1,9 +1,10 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { Lake } from '../types';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
+import axios from 'axios';
 
 // Fix for the default marker icon in Leaflet
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -23,8 +24,68 @@ interface LakeMapProps {
   selectedLake?: string;
 }
 
+// Interface for USGS data
+interface USGSFeature {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: [number, number];
+  };
+  properties: {
+    siteName: string;
+    variable: string;
+    unit: string;
+    value: number;
+    dateTime: string;
+  };
+}
+
 const LakeMap: React.FC<LakeMapProps> = ({ lakes, height = '100%', selectedLake }) => {
   const navigate = useNavigate();
+  const [usgsData, setUsgsData] = useState<USGSFeature[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUSGSData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          'https://waterservices.usgs.gov/nwis/dv/?format=json&stateCd=ca&siteStatus=all&siteType=GL,OC-CO,ES,LK'
+        );
+        
+        // Transform the USGS data into GeoJSON features
+        const features: USGSFeature[] = response.data.value.timeSeries.map((ts: any) => {
+          const { latitude: lat, longitude: lon } = ts.sourceInfo.geoLocation.geogLocation;
+          const latest = ts.values[0].value[0];
+          
+          return {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [lon, lat]
+            },
+            properties: {
+              siteName: ts.sourceInfo.siteName,
+              variable: ts.variable.variableName,
+              unit: ts.variable.unit.unitCode,
+              value: parseFloat(latest.value),
+              dateTime: latest.dateTime
+            }
+          };
+        });
+        
+        setUsgsData(features);
+      } catch (err) {
+        console.error('Error fetching USGS data:', err);
+        setError('Failed to load USGS water data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUSGSData();
+  }, []);
 
   const getMarkerColor = (status: string) => {
     switch (status) {
@@ -64,6 +125,16 @@ const LakeMap: React.FC<LakeMapProps> = ({ lakes, height = '100%', selectedLake 
 
   return (
     <div style={{ height, width: '100%' }}>
+      {loading && (
+        <div className="absolute top-2 right-2 z-10 bg-white px-3 py-1 rounded-md shadow-md text-sm">
+          Loading USGS data...
+        </div>
+      )}
+      {error && (
+        <div className="absolute top-2 right-2 z-10 bg-red-100 text-red-800 px-3 py-1 rounded-md shadow-md text-sm">
+          {error}
+        </div>
+      )}
       <MapContainer 
         center={[mapCenter[0], mapCenter[1]]} 
         zoom={zoom} 
@@ -79,6 +150,8 @@ const LakeMap: React.FC<LakeMapProps> = ({ lakes, height = '100%', selectedLake 
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
+        {/* Mock lake data markers */}
         {lakes.map((lake) => (
           <Marker 
             key={lake.id}
@@ -111,9 +184,39 @@ const LakeMap: React.FC<LakeMapProps> = ({ lakes, height = '100%', selectedLake 
             </Popup>
           </Marker>
         ))}
+        
+        {/* USGS data circle markers */}
+        {usgsData.map((feature, index) => (
+          <CircleMarker
+            key={`usgs-${index}`}
+            center={[feature.geometry.coordinates[1], feature.geometry.coordinates[0]]}
+            radius={Math.sqrt(feature.properties.value) / 100 || 5}
+            fillColor="#0077be"
+            color="#333"
+            weight={1}
+            fillOpacity={0.6}
+          >
+            <Popup>
+              <div className="text-center">
+                <h3 className="font-semibold">{feature.properties.siteName}</h3>
+                <p className="text-sm mt-1">
+                  {feature.properties.variable}: {feature.properties.value} {feature.properties.unit}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {new Date(feature.properties.dateTime).toLocaleDateString()}
+                </p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
       </MapContainer>
     </div>
   );
 };
 
 export default LakeMap;
+
+const calculateDistance = (region: HousingData, lake: Lake): number => {
+  // Simple distance calculation (this would be replaced with actual geocoding in production)
+  return Math.random() * 100; // Mock distance in miles
+};

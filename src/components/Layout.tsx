@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { DropletIcon, BarChart2Icon, BellIcon, DatabaseIcon, MenuIcon, XIcon } from 'lucide-react';
+import { DropletIcon, BarChart2Icon, BellIcon, DatabaseIcon, MenuIcon, XIcon, HomeIcon } from 'lucide-react';
 import { mockAlerts } from '../data/mockData';
 
 interface LayoutProps {
@@ -21,6 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       icon: <BellIcon className="w-5 h-5" />,
       badge: unreadAlerts > 0 ? unreadAlerts : undefined
     },
+    { path: '/housing', label: 'Housing Data', icon: <HomeIcon className="w-5 h-5" /> },
   ];
 
   const toggleMobileMenu = () => {
@@ -85,6 +86,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <button
               onClick={toggleMobileMenu}
               className="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
+              aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
                 <XIcon className="w-6 h-6" />
