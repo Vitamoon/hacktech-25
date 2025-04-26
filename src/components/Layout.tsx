@@ -86,6 +86,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <button
               onClick={toggleMobileMenu}
               className="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
+              aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
                 <XIcon className="w-6 h-6" />

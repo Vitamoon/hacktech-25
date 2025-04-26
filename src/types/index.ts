@@ -23,6 +23,17 @@ export interface LakeForecast {
   upperBound: number;
 }
 
+/**
+ * Represents an alert notification for a lake's water level
+ * @property {string} id - Unique identifier for the alert
+ * @property {string} lakeId - Reference to the lake this alert is for
+ * @property {string} lakeName - Human-readable name of the lake
+ * @property {'rising' | 'falling' | 'critical' | 'recovery'} type - The type of alert
+ * @property {string} message - Descriptive message about the alert
+ * @property {string} timestamp - ISO timestamp when the alert was generated
+ * @property {boolean} acknowledged - Whether the alert has been acknowledged
+ * @property {'info' | 'warning' | 'danger'} severity - The severity level of the alert
+ */
 export interface Alert {
   id: string;
   lakeId: string;
