@@ -5,29 +5,26 @@ import LakeMap from '../components/LakeMap';
 import StatusSummary from '../components/StatusSummary';
 import RecentAlerts from '../components/RecentAlerts';
 import { mockLakes, mockAlerts } from '../data/mockData';
-import { useMemo } from 'react';
 
 const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Using useMemo for better performance
-  const filteredLakes = useMemo(() => 
-    mockLakes.filter(lake => lake.name.toLowerCase().includes(searchTerm.toLowerCase())),
-    [searchTerm]
+  const filteredLakes = mockLakes.filter(lake => 
+    lake.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
-  const alertsByStatus = useMemo(() => ({
+
+  const alertsByStatus = {
     danger: mockAlerts.filter(alert => alert.severity === 'danger' && !alert.acknowledged).length,
     warning: mockAlerts.filter(alert => alert.severity === 'warning' && !alert.acknowledged).length,
     info: mockAlerts.filter(alert => alert.severity === 'info' && !alert.acknowledged).length,
-  }), [mockAlerts]);
-  
-  const lakesByStatus = useMemo(() => ({
+  };
+
+  const lakesByStatus = {
     normal: mockLakes.filter(lake => lake.status === 'normal').length,
     warning: mockLakes.filter(lake => lake.status === 'warning').length,
     danger: mockLakes.filter(lake => lake.status === 'danger').length,
     low: mockLakes.filter(lake => lake.status === 'low').length,
-  }), [mockLakes]);
+  };
 
   return (
     <div className="space-y-6">
