@@ -288,6 +288,24 @@ HOW IT WORKS
   gap: 2rem 3rem;
 }
 
+.explanations .exp:nth-child(odd) {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.explanations .exp:nth-child(even) {
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* When 'slide-in' class is added, it slides in */
+.slide-in {
+  opacity: 1 !important;
+  transform: translateX(0%) !important;
+}
+
 .how-it-works {
   grid-column: 1 / -1;
   padding: 1.2rem 2rem;
