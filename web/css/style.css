@@ -433,6 +433,10 @@ About Us
   vertical-align: center;
 }
 
+footer span {
+  font-size: 1.8rem;
+}
+
 /* 
 #######
 FOOTER
@@ -458,6 +462,10 @@ footer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   row-gap: 2.4rem;
+}
+
+footer span {
+  color: #444;
 }
 
 footer p {
