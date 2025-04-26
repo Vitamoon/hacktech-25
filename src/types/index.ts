@@ -41,3 +41,16 @@ export interface DataSource {
   lastSynced: string;
   status: 'online' | 'offline' | 'syncing';
 }
+
+export interface HousingData {
+  RegionID: string;
+  SizeRank: number;
+  RegionName: string;
+  RegionType: string;
+  StateName: string;
+  State: string;
+  City: string;
+  Metro: string;
+  CountyName: string;
+  [key: string]: string | number; // For dynamic date columns
+}
