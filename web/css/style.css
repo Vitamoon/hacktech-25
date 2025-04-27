@@ -506,6 +506,10 @@ footer {
   justify-content: center;
 }
 
+.footer {
+  color: #575757;
+}
+
 footer span {
   color: #575757;
 }
@@ -520,4 +524,12 @@ footer img {
 
 footer .logo-div a {
   color: #575757 !important;
+}
+
+.footer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 900;
 }
