@@ -67,7 +67,7 @@ const HousingSearchForm: React.FC<HousingSearchFormProps> = ({ onSearch }) => {
             </button>
             <button
               type="button"
-              onClick={() => setQuery('94102')}
+              onClick={() => setQuery('San Francisco')}
               className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
             >
               San Francisco
