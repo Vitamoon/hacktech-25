@@ -115,7 +115,11 @@ const Housing: React.FC = () => {
       {/* Chart Area */}
       {selectedHousing && (
         <div id="chart-area" className="pt-4">
-          <HousingPriceChart housingData={selectedHousing} timeRange={timeRange} />
+          <HousingPriceChart
+            housingData={selectedHousing}
+            timeRange={timeRange}
+            setTimeRange={setTimeRange} // Pass the setter function
+          />
         </div>
       )}
     </div>

@@ -26,14 +26,18 @@ ChartJS.register(
   Filler
 );
 
+type TimeRangeOption = '6m' | '1y' | '3y' | '5y' | 'all';
+
 interface HousingPriceChartProps {
   housingData: HousingData;
-  timeRange?: '6m' | '1y' | '3y' | '5y' | 'all';
+  timeRange?: TimeRangeOption;
+  setTimeRange: (range: TimeRangeOption) => void; // Add the setter prop
 }
 
 const HousingPriceChart: React.FC<HousingPriceChartProps> = ({
   housingData,
   timeRange = '1y',
+  setTimeRange, // Destructure the new prop
 }) => {
   // Filter price data based on time range
   const filteredPrices = (() => {
@@ -220,7 +224,7 @@ const HousingPriceChart: React.FC<HousingPriceChartProps> = ({
       </div>
       <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
         <div className="flex space-x-2">
-          {['6m', '1y', '3y', '5y', 'all'].map((range) => (
+          {(['6m', '1y', '3y', '5y', 'all'] as TimeRangeOption[]).map((range) => (
             <button
               key={range}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
@@ -228,7 +232,7 @@ const HousingPriceChart: React.FC<HousingPriceChartProps> = ({
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
-              onClick={() => {/* Would update timeRange */}}
+              onClick={() => setTimeRange(range)} // Update onClick handler
             >
               {range === 'all' ? 'All' : range}
             </button>
