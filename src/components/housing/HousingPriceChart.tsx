@@ -208,16 +208,6 @@ const HousingPriceChart: React.FC<HousingPriceChartProps> = ({
                   ${Math.round(avgPrice).toLocaleString()}
                 </p>
               </div>
-              <div className={`mt-2 sm:mt-0 sm:ml-3 px-4 py-2 ${
-                yoyChange >= 0 ? 'bg-green-50' : 'bg-red-50'
-              } rounded-md`}>
-                <p className="text-sm text-gray-600">Year-over-Year</p>
-                <p className={`text-lg font-semibold ${
-                  yoyChange >= 0 ? 'text-green-700' : 'text-red-700'
-                }`}>
-                  {yoyChange >= 0 ? '+' : ''}{yoyChange.toFixed(1)}%
-                </p>
-              </div>
             </div>
           </div>
         </div>

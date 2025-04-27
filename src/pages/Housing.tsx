@@ -70,10 +70,11 @@ const Housing: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {searchResults.slice(0, 6).map((result) => (
-                    <HousingResultCard 
-                      key={result.regionId} 
-                      data={result} 
-                      onSelect={handleSelectHousing} 
+                    <HousingResultCard
+                      key={result.regionId}
+                      data={result}
+                      onSelect={handleSelectHousing}
+                      timeRange={timeRange} // Pass timeRange here
                     />
                   ))}
                 </div>
