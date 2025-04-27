@@ -3,15 +3,24 @@ import { useDataContext } from '../context/DataContext';
 import HousingSearchForm from '../components/housing/HousingSearchForm';
 import HousingResultCard from '../components/housing/HousingResultCard';
 import HousingPriceChart from '../components/housing/HousingPriceChart';
+import ApiKeyInput from '../components/common/ApiKeyInput';
 import { HousingData } from '../types';
-import { Info } from 'lucide-react';
+import { Info, BrainCircuit, AlertTriangle } from 'lucide-react';
+import { useApiKeyContext } from '../context/ApiKeyContext';
+import { generateFloodingAnalysis } from '../services/openaiService';
 
 const Housing: React.FC = () => {
   const { housingData, searchHousingData } = useDataContext();
+  const { openaiApiKey } = useApiKeyContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<HousingData[]>([]);
   const [selectedHousing, setSelectedHousing] = useState<HousingData | null>(null);
   const [timeRange, setTimeRange] = useState<'6m' | '1y' | '3y' | '5y' | 'all'>('1y');
+  
+  // Add state for AI summary
+  const [summary, setSummary] = useState<string | null>(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
   
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -20,12 +29,68 @@ const Housing: React.FC = () => {
     
     // Clear selected housing when performing a new search
     setSelectedHousing(null);
+    // Clear summary when performing a new search
+    setSummary(null);
+    setSummaryError(null);
   };
   
   const handleSelectHousing = (housing: HousingData) => {
     setSelectedHousing(housing);
+    // Clear previous summary when selecting new housing
+    setSummary(null);
+    setSummaryError(null);
     // Scroll to the chart area
     document.getElementById('chart-area')?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // Add function to generate summary
+  const generateSummary = async (data: HousingData) => {
+    if (!data) return;
+    
+    setSummary(null);
+    setSummaryError(null);
+    setIsLoadingSummary(true);
+    
+    try {
+      if (!openaiApiKey) {
+        throw new Error("Please enter your OpenAI API key in the settings panel");
+      }
+      
+      // Calculate flood risk for the selected housing
+      const calculateFloodRisk = (): { risk: number; level: 'High' | 'Low' | 'Normal' } => {
+        const zipNum = parseInt(data.regionName, 10);
+        if (isNaN(zipNum)) return { risk: 5, level: 'Normal' };
+        
+        const hash = (zipNum % 997) / 997;
+        const risk = Math.round(hash * 100);
+        
+        let level: 'High' | 'Low' | 'Normal';
+        if (risk >= 40) {
+          level = 'High';
+        } else if (risk >= 10) {
+          level = 'Low';
+        } else {
+          level = 'Normal';
+        }
+        
+        return { risk, level };
+      };
+      
+      const floodRisk = calculateFloodRisk();
+      
+      const analysis = await generateFloodingAnalysis(
+        openaiApiKey,
+        floodRisk,
+        data
+      );
+      
+      setSummary(analysis);
+    } catch (error: any) {
+      console.error("Error generating flooding analysis:", error);
+      setSummaryError(error.message || "Failed to generate analysis. Please try again.");
+    } finally {
+      setIsLoadingSummary(false);
+    }
   };
   
   return (
@@ -35,25 +100,10 @@ const Housing: React.FC = () => {
         <p className="text-gray-600">Search and analyze housing prices by ZIP code, city, or state</p>
       </div>
 
-      {/* CSV file location information - REMOVED */}
-      {/*
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <div className="flex items-start">
-          <Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-          <div>
-            <h3 className="font-medium text-blue-800">Where to place your CSV file</h3>
-            <p className="mt-1 text-sm text-blue-700">
-              Place your Zillow housing data CSV file in the <code className="bg-blue-100 px-1 py-0.5 rounded">public/data/</code> directory as <code className="bg-blue-100 px-1 py-0.5 rounded">housing_data.csv</code>. 
-              The application will automatically load this file when the Housing Data page is accessed.
-            </p>
-          </div>
-        </div>
-      </div>
-      */}
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
           <HousingSearchForm onSearch={handleSearch} />
+          <ApiKeyInput />
         </div>
         
         <div className="lg:col-span-2">
@@ -74,7 +124,8 @@ const Housing: React.FC = () => {
                       key={result.regionId}
                       data={result}
                       onSelect={handleSelectHousing}
-                      timeRange={timeRange} // Pass timeRange here
+                      timeRange={timeRange}
+                      onGenerateSummary={generateSummary}
                     />
                   ))}
                 </div>
@@ -115,12 +166,64 @@ const Housing: React.FC = () => {
       
       {/* Chart Area */}
       {selectedHousing && (
-        <div id="chart-area" className="pt-4">
+        <div id="chart-area" className="pt-4 space-y-4">
           <HousingPriceChart
             housingData={selectedHousing}
             timeRange={timeRange}
-            setTimeRange={setTimeRange} // Pass the setter function
+            setTimeRange={setTimeRange}
           />
+          
+          {/* AI Summary Section */}
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                  <BrainCircuit className="h-5 w-5 mr-2 text-purple-600" /> 
+                  AI Analysis
+                </h2>
+                {!summary && !isLoadingSummary && !summaryError && (
+                  <button 
+                    onClick={() => generateSummary(selectedHousing)}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                  >
+                    Generate Analysis
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {isLoadingSummary && (
+                <div className="flex items-center justify-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+                  <p className="ml-3 text-gray-600">Generating analysis...</p>
+                </div>
+              )}
+              
+              {summaryError && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                  <div className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2" />
+                    <strong className="font-bold">Error:</strong>
+                    <span className="block sm:inline ml-1">{summaryError}</span>
+                  </div>
+                </div>
+              )}
+              
+              {summary && !isLoadingSummary && (
+                <div className="text-gray-700 space-y-3 whitespace-pre-wrap">
+                  <p>{summary}</p>
+                </div>
+              )}
+              
+              {!summary && !isLoadingSummary && !summaryError && (
+                <div className="text-center py-8 text-gray-500">
+                  <BrainCircuit className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p>Generate an AI analysis to get insights about this location's housing market and flooding risk.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

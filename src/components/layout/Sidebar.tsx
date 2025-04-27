@@ -72,16 +72,33 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           {/* Removed Reports NavLink */}
         </ul>
       </nav>
-      <div className="flex-shrink-0 p-4 mt-auto border-t border-blue-700">
-        <div className="flex items-center">
+      <div className="flex-shrink-0 p-4 mt-auto">
+        <div className="flex items-center justify-center mb-3"> {/* Centered flex container */}
+          <a
+            href="https://vly.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-200 hover:text-white transition-colors"
+          >
+            Thank you to Vly.ai!
+          </a>
           <img
-            className="w-10 h-10 rounded-full"
-            src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt="User avatar"
+            src="https://framerusercontent.com/images/jiy6EMFz7k7FVqGsPe0Kk5fZMrc.png"
+            alt="Vly.ai logo"
+            className="h-5 w-auto ml-2" // Increased height from h-4 to h-5
           />
-          <div className="ml-3">
-            <p className="text-sm font-medium text-white">John Doe</p>
-            <p className="text-xs text-blue-200">Data Analyst</p>
+        </div>
+        <div className="border-t border-blue-700 pt-3"> {/* Added pt-3 for spacing */}
+          <div className="flex items-center">
+            <img
+              className="w-10 h-10 rounded-full"
+              src="/hacktech-logo.png"
+              alt="User avatar"
+            />
+            <div className="ml-3">
+              <p className="text-sm font-medium text-white">Admin Profile</p>
+              <p className="text-xs text-blue-200">Hacktech 2025</p>
+            </div>
           </div>
         </div>
       </div>
