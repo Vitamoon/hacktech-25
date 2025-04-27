@@ -19,36 +19,28 @@ Paragraph default: 1.6
 
 --- 02 COLORS
 
-- Primary: #e67e22
-- Tints:
-#fcffbf
-#fcffc5
-#eb984e
+- Primary: #5eaea6
+- Tints: #c8f1f1
+#a0c1c1
+
 
 - Shades: 
-#b4d9d9
-#45260a
+#506060
 
 - Accents:
+#087f5b
+#5eaea6
 - Greys
-
-#888
-#767676 (lightest grey allowed on #fff)
-#6f6f6f (lightest grey allowed on #fdf2e9)
+#fff
 #393939
-#333
-
---- 05 SHADOWS
-
-0 2.4rem 4.8rem rgba(0, 0, 0, 0.075);
+#3b3b3b
+#444
 
 --- 06 BORDER-RADIUS
 
-Default: 9px
-Medium: 11px
+Default: 5px
 
 --- 07 WHITESPACE
-
 - Spacing system (px)
 2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
 
@@ -191,7 +183,7 @@ header .logo-div a {
 
 .hero-section {
   padding: 0 3.2rem;
-  background-color: rgb(94, 174, 166);
+  background-color: #5eaea6;
 }
 
 .hero {
@@ -344,8 +336,6 @@ HOW IT WORKS
 
 .list li {
   display: flex;
-  /* background-color: red; */
-  /* justify-content: center; */
   align-items: center;
   gap: 0.75rem;
   padding-left: 2rem;
@@ -398,7 +388,6 @@ About Us
 
   display: grid;
   grid-template-columns: auto 1fr auto;
-  /* column-gap: 2.4rem; */
   row-gap: 3.2rem;
   align-items: center;
   background-color: #fff;
@@ -412,7 +401,6 @@ About Us
 .text {
   font-size: 2.4rem;
   font-weight: 500;
-  /* color: #087f5b; */
 }
 
 .number {
@@ -491,11 +479,11 @@ FOOTER
 */
 
 footer {
-  display: block; /* Make sure it's displayed */
-  position: relative; /* Ensure it stays within the flow of the page */
-  background-color: #f1f1f1; /* Add a background to ensure it's visible */
+  display: block;
+  position: relative;
+  background-color: #f1f1f1;
   padding: 20px;
-  color: black; /* Ensure the text color is visible */
+  color: black;
 }
 
 .footer-grid {
