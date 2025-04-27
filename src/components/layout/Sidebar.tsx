@@ -20,10 +20,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <img 
             src="/logo.png" 
             alt="Watered-down Properties Logo" 
-            className="w-48 h-24 mb-2"
+            className="w-64 h-64 mb-2"
           />
           <span className="flex items-center text-xl font-medium text-white">
-            <BarChart2 className="w-6 h-6 mr-2" />
+            {/* <BarChart2 className="w-6 h-6 mr-2" /> */}
             Watered-down Properties
           </span>
         </div>
