@@ -82,7 +82,7 @@ html {
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "Montserrat", sans-serif;
   line-height: 1;
   font-weight: 400;
   color: #393939;
@@ -225,6 +225,7 @@ header .logo-div a {
   font-size: 2rem;
   line-height: 2rem;
   color: #3b3b3b;
+  font-weight: 500;
 }
 
 .hero-desc {
@@ -458,7 +459,6 @@ About Us
 
 .logo-div a {
   display: flex;
-  justify-content: center;
   align-items: center;
   gap: 1.6rem;
   text-decoration: none;
