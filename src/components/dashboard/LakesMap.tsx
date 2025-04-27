@@ -156,7 +156,8 @@ const USGSLakesOverlay: React.FC = () => {
 
 // Placeholder colors for alerts
 const highAlertColor = '#FFA500'; // Orange
-const lowAlertColor = '#FFFFE0';  // Pale Yellow
+const lowAlertColor = '#FFFFE0';  // Pale Yellow - Keep if still needed for low alerts
+const customHighlightColor = '#FFFF00'; // Yellow for your specific list
 const zipCodeBaseColor = '#22c55e'; // Green base color for zip code overlay
 
 // --- UPDATED COMPONENT: ZipCodeAlertOverlay ---
@@ -166,21 +167,50 @@ const ZipCodeAlertOverlay: React.FC = () => {
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const map = useMap();
 
+  // Define the list of zip codes to highlight in yellow
+  const specificZipCodesToHighlight = new Set([
+    '90039', '90201', '90265', '90740', '90802', '90803', '90804', '90805', '91932', '92108',
+    '92123', '92154', '92627', '92646', '92648', '92660', '92663', '92683', '93001', '93015',
+    '93030', '93033', '93101', '93103', '93108', '93117', '93620', '93622', '93635', '93706',
+    '93905', '93906', '93940', '93953', '94002', '94025', '94063', '94303', '94401', '94403',
+    '94404', '94509', '94533', '94558', '94559', '94561', '94565', '94571', '94574', '94585',
+    '94901', '94941', '94965', '95010', '95060', '95076', '95202', '95203', '95204', '95205',
+    '95206', '95329', '95330', '95336', '95337', '95340', '95341', '95348', '95376', '95423',
+    '95443', '95446', '95462', '95469', '95470', '95482', '95608', '95616', '95618', '95624',
+    '95630', '95641', '95691', '95695', '95735', '95758', '95776', '95814', '95815', '95822',
+    '95831', '95833', '95834', '95835', '95901', '95916', '95917', '95922', '95925', '95926',
+    '95928', '95948', '95953', '95959', '95965', '95966', '95991', '95993'
+  ]);
+
+
   // Load GeoJSON data
+  // Inside the ZipCodeAlertOverlay component
   useEffect(() => {
     const fetchGeoJson = async () => {
       try {
+        console.log('Fetching GeoJSON data...');
         const response = await fetch('/data/ca-geo.json');
+        if (!response.ok) {
+          throw new Error(`Failed to load GeoJSON: ${response.status} ${response.statusText}`);
+        }
         const data = await response.json();
+        console.log('GeoJSON data loaded successfully', data.features?.length || 'no features');
         setGeoJsonData(data);
       } catch (error) {
         console.error('Error loading GeoJSON data:', error);
+        // Add visual feedback for debugging
+        alert('Failed to load map data. Check console for details.');
       }
     };
-
+  
     fetchGeoJson();
   }, []);
-
+  
+  // Add debugging for housing data
+  useEffect(() => {
+    console.log('Housing data available:', housingData?.length || 0);
+    console.log('Lakes data available:', lakes?.length || 0);
+  }, [housingData, lakes]);
   // Process high and low alert overlays
   useEffect(() => {
     if (!geoJsonData) return;
@@ -261,37 +291,48 @@ const ZipCodeAlertOverlay: React.FC = () => {
         style={(feature) => {
           // Get the zip code from the feature
           const zipCode = feature?.properties?.ZCTA5CE10 || feature?.properties?.ZIP;
-          
+
+          // *** ADDED CHECK: Highlight specific zip codes first ***
+          if (zipCode && specificZipCodesToHighlight.has(zipCode)) {
+            return {
+              fillColor: customHighlightColor, // Use the new yellow color
+              weight: 1,
+              opacity: 0.7,
+              color: 'white', // Border color
+              fillOpacity: 0.6 // Adjust opacity as needed
+            };
+          }
+
           // Find housing data for this zip code
-          const housingInfo = housingData?.find(h => h.regionName === zipCode || h.zip === zipCode);
-          
+          const housingInfo = housingData?.find(h => h.regionName === zipCode || h.zip === zipCode); // Assuming housingData might have zip property
+
           // Calculate color intensity based on price data
           let opacity = 0.3; // Default opacity
           let intensity = 0.5; // Default intensity
-          
+
           if (housingInfo) {
             // Get the latest price
-            const price = housingInfo.prices?.[housingInfo.prices.length - 1]?.value || 
-                         housingInfo.price || 0;
-            
+            const price = housingInfo.prices?.[housingInfo.prices.length - 1]?.value ||
+                         housingInfo.price || 0; // Assuming housingInfo might have price property
+
             // Normalize price to get intensity (0-1 range)
             intensity = Math.min(Math.max(price / 1000000, 0.2), 1);
             opacity = Math.min(Math.max(price / 2000000, 0.2), 0.7);
           }
-          
-          // Check if this zip code is in a high or low alert area
+
+          // Check if this zip code is in a high or low alert area (Keep existing alert logic if needed)
           const alertOverlay = alertOverlays.find(o => o.zipCode === zipCode);
           if (alertOverlay) {
             return {
-              fillColor: alertOverlay.color,
+              fillColor: alertOverlay.color, // Use alert color (highAlertColor or lowAlertColor)
               weight: 1,
               opacity: 0.7,
               color: 'white',
               fillOpacity: 0.6
             };
           }
-          
-          // Otherwise, use price-based coloring
+
+          // Otherwise, use price-based coloring (existing logic)
           return {
             fillColor: zipCodeBaseColor,
             weight: 1,
@@ -307,7 +348,7 @@ const ZipCodeAlertOverlay: React.FC = () => {
           let popupContent = `<div><strong>Zip Code: ${zipCode}</strong>`;
           
           if (housingInfo) {
-            const price = housingInfo.prices?.[housingInfo.prices.length - 1]?.value || 
+            const price = housingInfo.prices?.[housingInfo.prices.length - 1]?.value ||
                          housingInfo.price || 0;
             popupContent += `<br/>Average Home Price: $${price.toLocaleString()}`;
           } else {

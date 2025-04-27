@@ -20,7 +20,6 @@ const DataContext = createContext<DataContextProps>({
   lakes: [],
   readings: {},
   forecasts: {},
-  dataSources: [],
   housingData: [],
   loading: false,
   error: null,

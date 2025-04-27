@@ -22,8 +22,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             alt="Watered-down Properties Logo" 
             className="w-64 h-64 mb-2"
           />
-          <span className="flex items-center text-xl font-medium text-white">
+          <span className="flex items-center text-xl font-medium text-white pl-6">
             {/* <BarChart2 className="w-6 h-6 mr-2" /> */}
+            
             Watered-down Properties
           </span>
         </div>
