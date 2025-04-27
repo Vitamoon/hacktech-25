@@ -1,6 +1,6 @@
 import React, { useState } from 'react'; // Ensure useState is imported
 import { HousingData } from '../../types';
-import { Home, MapPin, ArrowRight, TrendingUp, TrendingDown, BrainCircuit, X } from 'lucide-react';
+import { Home, MapPin, ArrowRight, TrendingUp, TrendingDown, BrainCircuit, X, Droplet } from 'lucide-react';
 
 // Define the TimeRangeOption type, matching the one in HousingPriceChart
 type TimeRangeOption = '6m' | '1y' | '3y' | '5y' | 'all';
@@ -8,10 +8,10 @@ type TimeRangeOption = '6m' | '1y' | '3y' | '5y' | 'all';
 interface HousingResultCardProps {
   data: HousingData;
   onSelect: (data: HousingData) => void;
-  timeRange: TimeRangeOption; // Add timeRange prop
+  timeRange?: TimeRangeOption; // Make timeRange optional
 }
 
-const HousingResultCard: React.FC<HousingResultCardProps> = ({ data, onSelect, timeRange }) => {
+const HousingResultCard: React.FC<HousingResultCardProps> = ({ data, onSelect, timeRange = '1y' }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -126,10 +126,64 @@ const HousingResultCard: React.FC<HousingResultCardProps> = ({ data, onSelect, t
   }
 
 
+  // Calculate flood risk based on zip code
+  const calculateFloodRisk = (): { risk: number; level: 'High' | 'Low' | 'Normal' } => {
+    // This is a simplified mock implementation
+    // In a real app, you would use actual proximity data to USGS lakes
+    
+    // Use the zip code to generate a deterministic but seemingly random risk value
+    const zipNum = parseInt(data.regionName, 10);
+    if (isNaN(zipNum)) return { risk: 5, level: 'Normal' };
+    
+    // Generate a risk value between 0-100 based on the zip code
+    // This is just for demonstration - in a real app you'd use actual geographic data
+    const hash = (zipNum % 997) / 997; // Simple hash between 0-1
+    const risk = Math.round(hash * 100);
+    
+    // Determine risk level based on the calculated risk value
+    let level: 'High' | 'Low' | 'Normal';
+    if (risk >= 40) {
+      level = 'High';
+    } else if (risk >= 10) {
+      level = 'Low';
+    } else {
+      level = 'Normal';
+    }
+    
+    return { risk, level };
+  };
+  
+  const floodRisk = calculateFloodRisk();
+  
+  // Determine styling based on risk level
+  const getRiskStyles = () => {
+    switch (floodRisk.level) {
+      case 'High':
+        return {
+          bg: 'bg-orange-50',
+          text: 'text-orange-700',
+          border: 'border-orange-200'
+        };
+      case 'Low':
+        return {
+          bg: 'bg-yellow-50',
+          text: 'text-yellow-700',
+          border: 'border-yellow-200'
+        };
+      default:
+        return {
+          bg: 'bg-blue-50',
+          text: 'text-blue-700',
+          border: 'border-blue-200'
+        };
+    }
+  };
+  
+  const riskStyles = getRiskStyles();
+
   return (
     <div
       className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
-      // Note: The main onClick still selects the card for the chart
       onClick={() => onSelect(data)}
     >
       <div className="p-4">
@@ -148,7 +202,7 @@ const HousingResultCard: React.FC<HousingResultCardProps> = ({ data, onSelect, t
           </div>
           <div className="text-right">
             <p className="text-lg font-bold text-gray-900">${latestPrice.toLocaleString()}</p>
-            <div className={`flex items-center justify-end text-sm ${ // Added justify-end
+            <div className={`flex items-center justify-end text-sm ${
               changePercentage >= 0 ? 'text-green-600' : 'text-red-600'
             }`}>
               {changePercentage >= 0 ? (
@@ -180,38 +234,39 @@ const HousingResultCard: React.FC<HousingResultCardProps> = ({ data, onSelect, t
               {shortTermTrend >= 0 ? '+' : ''}{shortTermTrend.toFixed(1)}%
             </p>
           </div>
-          <div className="bg-blue-50 p-2 rounded-md">
-             <p className="text-xs text-gray-500">Region Type</p>
-             <p className="text-sm font-medium text-blue-700 capitalize">{data.regionType}</p>
+          {/* Replace Region Type with Flood Risk */}
+          <div className={`${riskStyles.bg} p-2 rounded-md border ${riskStyles.border}`}>
+            <p className="text-xs text-gray-500">Risk of Flooding</p>
+            <p className={`text-sm font-medium flex items-center ${riskStyles.text}`}>
+              <Droplet className="h-3 w-3 mr-1" />
+              {floodRisk.level} ({floodRisk.risk}%)
+            </p>
           </div>
-          {/* Added SizeRank Field */}
+          {/* Size Rank Field */}
           <div className="bg-gray-50 p-2 rounded-md">
             <p className="text-xs text-gray-500">Size Rank</p>
             <p className="text-sm font-medium text-gray-800">{data.sizeRank ? data.sizeRank.toLocaleString() : 'N/A'}</p>
           </div>
+          
+          {/* AI Summary Button */}
+          <div className="bg-purple-50 hover:bg-purple-100 p-2 rounded-md text-left transition-colors cursor-pointer"
+               onClick={handleSummaryClick}>
+            <p className="text-xs text-gray-500">Analysis</p>
+            <p className="text-sm font-medium text-purple-700 capitalize flex items-center">
+              <BrainCircuit className="h-4 w-4 mr-1 inline" /> AI Summary
+            </p>
+          </div>
         </div>
-        {/* AI Summary Button */}
-        <button
-            onClick={handleSummaryClick} // Use the new handler
-            className="bg-purple-50 hover:bg-purple-100 p-2 rounded-md text-left transition-colors flex flex-col justify-between"
-          >
-            <div>
-              <p className="text-xs text-gray-500">Analysis</p>
-              <p className="text-sm font-medium text-purple-700 capitalize flex items-center">
-                <BrainCircuit className="h-4 w-4 mr-1 inline" /> AI Summary
-              </p>
-            </div>
-          </button>
 
-        {/* View Price History Button - Adjusted to not be part of the grid */}
-        <button
-          className="mt-4 w-full flex items-center justify-center text-sm text-blue-600 font-medium hover:text-blue-800 transition-colors"
-          // Keep the main card onClick for selecting the chart
-          // onClick={(e) => { e.stopPropagation(); onSelect(data); }} // Or remove if main card click is sufficient
-        >
-          View Price History
-          <ArrowRight className="ml-1 h-4 w-4" />
-        </button>
+        {/* View Price History Button - Outside of grid */}
+        <div className="mt-4">
+          <button
+            className="w-full flex items-center justify-center text-sm text-blue-600 font-medium hover:text-blue-800 transition-colors"
+          >
+            View Price History
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </button>
+        </div>
 
       </div>
 
