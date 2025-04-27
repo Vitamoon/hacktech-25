@@ -1,4 +1,4 @@
-const accordBtns = document.querySelectorAll(".icon--accord");
+const accordBtns = document.querySelectorAll(".acc-click");
 const accordItems = document.querySelectorAll(".item");
 var selected;
 
