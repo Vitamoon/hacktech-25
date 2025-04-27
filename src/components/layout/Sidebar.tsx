@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <img
             src="https://framerusercontent.com/images/jiy6EMFz7k7FVqGsPe0Kk5fZMrc.png"
             alt="Vly.ai logo"
-            className="h-5 w-auto ml-2" // Increased height from h-4 to h-5
+            className="h-6 w-auto ml-2" // vly attribution
           />
         </div>
         <div className="border-t border-blue-700 pt-3"> {/* Added pt-3 for spacing */}
