@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react';
-// Import Rectangle
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, Rectangle } from 'react-leaflet';
+import { 
+  MapContainer, 
+  TileLayer, 
+  Marker, 
+  Popup, 
+  Circle, 
+  useMap, 
+  Rectangle,
+  GeoJSON 
+} from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { useDataContext } from '../../context/DataContext';
 import 'leaflet/dist/leaflet.css';
-import L, { LatLngBoundsExpression } from 'leaflet'; // Import LatLngBoundsExpression
+import L, { LatLngBoundsExpression } from 'leaflet';
 import Papa from 'papaparse';
 
 // Fix Leaflet marker icon issue in React
@@ -149,22 +157,37 @@ const USGSLakesOverlay: React.FC = () => {
 // Placeholder colors for alerts
 const highAlertColor = '#FFA500'; // Orange
 const lowAlertColor = '#FFFFE0';  // Pale Yellow
+const zipCodeBaseColor = '#22c55e'; // Green base color for zip code overlay
 
-// --- NEW COMPONENT: ZipCodeAlertOverlay ---
-interface AlertOverlayData {
-  bounds: LatLngBoundsExpression;
-  color: string;
-  zipCode: string; // Or other identifier
-}
-
+// --- UPDATED COMPONENT: ZipCodeAlertOverlay ---
 const ZipCodeAlertOverlay: React.FC = () => {
-  const { lakes } = useDataContext();
+  const { lakes, housingData } = useDataContext();
   const [alertOverlays, setAlertOverlays] = useState<AlertOverlayData[]>([]);
+  const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const map = useMap();
 
+  // Load GeoJSON data
   useEffect(() => {
+    const fetchGeoJson = async () => {
+      try {
+        const response = await fetch('/data/ca-geo.json');
+        const data = await response.json();
+        setGeoJsonData(data);
+      } catch (error) {
+        console.error('Error loading GeoJSON data:', error);
+      }
+    };
+
+    fetchGeoJson();
+  }, []);
+
+  // Process high and low alert overlays
+  useEffect(() => {
+    if (!geoJsonData) return;
+
     const overlays: AlertOverlayData[] = [];
 
+    // First, handle lake-based alerts
     lakes.forEach(lake => {
       const isHighAlert = lake.currentLevel > lake.criticalHighLevel;
       const isLowAlert = lake.currentLevel < lake.criticalLowLevel;
@@ -173,48 +196,132 @@ const ZipCodeAlertOverlay: React.FC = () => {
         const alertType = isHighAlert ? 'high' : 'low';
         const color = isHighAlert ? highAlertColor : lowAlertColor;
 
-        // --- PLACEHOLDER LOGIC ---
-        // 1. Identify Zip Codes: Determine which zip codes fall within the
-        //    alert radius for this lake (e.g., based on distance calculation
-        //    or a predefined mapping). This might involve fetching data or
-        //    using a spatial library.
-        //    Example: const affectedZipCodes = findZipCodesNear(lake.location, alertType);
-
-        // 2. Get Boundaries: For each affected zip code, you need its
-        //    geographical boundary (e.g., from a GeoJSON file or API).
-        //    Example: const zipBoundaryGeoJSON = await fetchZipBoundary(zipCode);
-
-        // 3. Create Bounds: Convert the GeoJSON boundary into Leaflet's
-        //    LatLngBoundsExpression format.
-        //    Example: const bounds = L.geoJSON(zipBoundaryGeoJSON).getBounds();
-
-        // 4. Add to Overlays: Push the data to the overlays array.
-        //    overlays.push({ bounds, color, zipCode });
-
-        // --- MOCK EXAMPLE (Remove in production) ---
-        // This is just a hardcoded example rectangle near the lake's location.
-        // Replace this with actual boundary logic.
-        if (isHighAlert) {
-          const mockBounds: LatLngBoundsExpression = [
-            [lake.location.lat - 0.05, lake.location.lng - 0.05],
-            [lake.location.lat + 0.05, lake.location.lng + 0.05]
-          ];
-          overlays.push({ bounds: mockBounds, color: highAlertColor, zipCode: 'HIGH_MOCK' });
-        } else if (isLowAlert) {
-           const mockBounds: LatLngBoundsExpression = [
-            [lake.location.lat - 0.1, lake.location.lng - 0.1],
-            [lake.location.lat + 0.1, lake.location.lng + 0.1]
-          ];
-           overlays.push({ bounds: mockBounds, color: lowAlertColor, zipCode: 'LOW_MOCK' });
-        }
-        // --- END MOCK EXAMPLE ---
+        // Find zip codes near the lake (simplified approach)
+        const nearbyZips = findZipCodesNear(lake.location, alertType === 'high' ? 0.05 : 0.1);
+        
+        nearbyZips.forEach(zipCode => {
+          // Find the GeoJSON feature for this zip code
+          const feature = geoJsonData.features.find((f: any) => 
+            f.properties.ZCTA5CE10 === zipCode || f.properties.ZIP === zipCode
+          );
+          
+          if (feature) {
+            // Convert GeoJSON coordinates to Leaflet bounds
+            const bounds = getBoundsFromGeoJSON(feature);
+            overlays.push({ bounds, color, zipCode });
+          }
+        });
       }
     });
 
     setAlertOverlays(overlays);
+  }, [lakes, geoJsonData, map]);
 
-  }, [lakes, map]); // Include map if needed for boundary calculations
+  // Helper function to find zip codes near a location (mock implementation)
+  const findZipCodesNear = (location: { lat: number, lng: number }, radius: number): string[] => {
+    // This is a simplified mock implementation
+    // In a real app, you would use actual proximity data
+    const baseZip = Math.floor(Math.abs(location.lat * location.lng * 100)) % 90000 + 10000;
+    const count = Math.floor(radius * 100);
+    
+    const mockZipCodes = new Set<string>();
+    for (let i = 0; i < count; i++) {
+      mockZipCodes.add((baseZip + i).toString());
+    }
+    
+    return Array.from(mockZipCodes);
+  };
 
+  // Helper function to convert GeoJSON to Leaflet bounds
+  const getBoundsFromGeoJSON = (feature: any): LatLngBoundsExpression => {
+    // For simplicity, we'll just use the first polygon's bounding box
+    if (feature.geometry.type === 'Polygon') {
+      const coordinates = feature.geometry.coordinates[0];
+      const lats = coordinates.map((coord: number[]) => coord[1]);
+      const lngs = coordinates.map((coord: number[]) => coord[0]);
+      
+      return [
+        [Math.min(...lats), Math.min(...lngs)],
+        [Math.max(...lats), Math.max(...lngs)]
+      ];
+    }
+    
+    // Fallback for other geometry types
+    return [
+      [feature.bbox?.[1] || 0, feature.bbox?.[0] || 0],
+      [feature.bbox?.[3] || 0, feature.bbox?.[2] || 0]
+    ];
+  };
+
+  // Render GeoJSON overlay with price-based intensity
+  if (geoJsonData) {
+    return (
+      <GeoJSON
+        data={geoJsonData}
+        style={(feature) => {
+          // Get the zip code from the feature
+          const zipCode = feature?.properties?.ZCTA5CE10 || feature?.properties?.ZIP;
+          
+          // Find housing data for this zip code
+          const housingInfo = housingData?.find(h => h.regionName === zipCode || h.zip === zipCode);
+          
+          // Calculate color intensity based on price data
+          let opacity = 0.3; // Default opacity
+          let intensity = 0.5; // Default intensity
+          
+          if (housingInfo) {
+            // Get the latest price
+            const price = housingInfo.prices?.[housingInfo.prices.length - 1]?.value || 
+                         housingInfo.price || 0;
+            
+            // Normalize price to get intensity (0-1 range)
+            intensity = Math.min(Math.max(price / 1000000, 0.2), 1);
+            opacity = Math.min(Math.max(price / 2000000, 0.2), 0.7);
+          }
+          
+          // Check if this zip code is in a high or low alert area
+          const alertOverlay = alertOverlays.find(o => o.zipCode === zipCode);
+          if (alertOverlay) {
+            return {
+              fillColor: alertOverlay.color,
+              weight: 1,
+              opacity: 0.7,
+              color: 'white',
+              fillOpacity: 0.6
+            };
+          }
+          
+          // Otherwise, use price-based coloring
+          return {
+            fillColor: zipCodeBaseColor,
+            weight: 1,
+            opacity: 0.7,
+            color: 'white',
+            fillOpacity: opacity * intensity
+          };
+        }}
+        onEachFeature={(feature, layer) => {
+          const zipCode = feature?.properties?.ZCTA5CE10 || feature?.properties?.ZIP;
+          const housingInfo = housingData?.find(h => h.regionName === zipCode || h.zip === zipCode);
+          
+          let popupContent = `<div><strong>Zip Code: ${zipCode}</strong>`;
+          
+          if (housingInfo) {
+            const price = housingInfo.prices?.[housingInfo.prices.length - 1]?.value || 
+                         housingInfo.price || 0;
+            popupContent += `<br/>Average Home Price: $${price.toLocaleString()}`;
+          } else {
+            popupContent += `<br/>No housing data available`;
+          }
+          
+          popupContent += `</div>`;
+          layer.bindPopup(popupContent);
+        }}
+      />
+    );
+  }
+
+  // Fallback to rectangle-based overlays if GeoJSON isn't loaded
   return (
     <>
       {alertOverlays.map((overlay, index) => (
@@ -223,7 +330,7 @@ const ZipCodeAlertOverlay: React.FC = () => {
           bounds={overlay.bounds}
           pathOptions={{
             fillColor: overlay.color,
-            color: overlay.color, // Border color same as fill
+            color: overlay.color,
             weight: 1,
             fillOpacity: 0.4,
           }}
@@ -234,7 +341,6 @@ const ZipCodeAlertOverlay: React.FC = () => {
     </>
   );
 };
-// --- END NEW COMPONENT ---
 
 
 // Housing data overlay component

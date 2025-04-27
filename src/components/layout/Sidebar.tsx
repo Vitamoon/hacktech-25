@@ -14,29 +14,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}
     >
-      <div className="flex items-center justify-between flex-shrink-0 p-4">
-        <span className="flex items-center text-xl font-medium text-white">
-          <BarChart2 className="w-6 h-6 mr-2" />
-          AquaMonitor
-        </span>
+      <div className="flex flex-col items-center justify-between flex-shrink-0 p-4">
+        {/* Logo added above the title */}
+        <div className="flex flex-col items-center mb-2">
+          <img 
+            src="/logo.png" 
+            alt="Watered-down Properties Logo" 
+            className="w-48 h-24 mb-2"
+          />
+          <span className="flex items-center text-xl font-medium text-white">
+            <BarChart2 className="w-6 h-6 mr-2" />
+            Watered-down Properties
+          </span>
+        </div>
         <button
           onClick={toggleSidebar}
-          className="p-1 text-white rounded-md lg:hidden hover:text-gray-200 focus:outline-none"
+          className="p-1 text-white rounded-md lg:hidden hover:text-gray-200 focus:outline-none absolute top-4 right-4"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
         </button>
       </div>
       <nav className="flex-1 overflow-auto">
@@ -85,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <img
             src="https://framerusercontent.com/images/jiy6EMFz7k7FVqGsPe0Kk5fZMrc.png"
             alt="Vly.ai logo"
-            className="h-6 w-auto ml-2" // vly attribution
+            className="h-8 w-auto ml-2" // vly attribution
           />
         </div>
         <div className="border-t border-blue-700 pt-3"> {/* Added pt-3 for spacing */}

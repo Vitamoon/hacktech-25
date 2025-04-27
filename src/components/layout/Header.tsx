@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               ></path>
             </svg>
           </button>
-          <h1 className="text-xl font-semibold text-blue-700">Lake Monitoring Platform</h1>
+          <h1 className="text-xl font-semibold text-blue-700">Housing and Sustainability Analytics Platform</h1>
         </div>
         <div className="flex items-center space-x-4">
           <div className="relative">

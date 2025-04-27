@@ -24,6 +24,8 @@ Based on this information:
 
 Keep your response concise, informative, and actionable.
 
+DO NOT include the character "*" or any numbered lists in your response.
+
 You should follow this format for your response, which is an example using Folsom, CA:
 
 Location: Folsom, CA (Sacramento County)

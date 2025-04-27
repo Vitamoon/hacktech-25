@@ -118,8 +118,8 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Water Level Dashboard</h1>
-          <p className="text-gray-600">Real-time monitoring of lake water levels</p>
+          <h1 className="text-2xl font-bold text-gray-800">Interactive Overlay Map</h1>
+          <p className="text-gray-600">Real-time monitoring of lake water levels and housing data</p>
         </div>
         <div className="mt-4 md:mt-0">
           <button
