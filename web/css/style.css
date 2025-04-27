@@ -77,6 +77,8 @@ Height: 1078 */
 
 html {
   font-size: 62.5%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -84,6 +86,8 @@ body {
   line-height: 1;
   font-weight: 400;
   color: #393939;
+  /* max-width: 100%; */
+  overflow-x: hidden;
 }
 
 .btn--cta:link,
@@ -91,7 +95,7 @@ body {
   border-radius: 5px;
   background-color: #c8f1f1;
   color: #506060;
-  padding: 1.6rem 2.4rem;
+  padding: 1.2rem 1.4rem;
   font-weight: 600;
 }
 
@@ -132,6 +136,10 @@ body {
   /* transform: all 3s; */
 }
 
+header .logo-div a {
+  color: #444;
+}
+
 .main-nav-list {
   list-style: none;
   display: flex;
@@ -155,6 +163,10 @@ body {
 .main-nav-link:hover,
 .main-nav-link:active {
   color: #696969;
+}
+
+.header .logo-div {
+  color: #444;
 }
 
 .nav-cta:link,
@@ -352,7 +364,7 @@ HOW IT WORKS
 }
 
 .exp-title {
-  color: rgb(94, 174, 166);
+  color: #5eaea6;
 }
 
 .second-explanation {
@@ -447,7 +459,9 @@ About Us
 .logo-div a {
   display: flex;
   justify-content: center;
-  vertical-align: center;
+  align-items: center;
+  gap: 1.6rem;
+  text-decoration: none;
 }
 
 footer span {
@@ -485,6 +499,13 @@ footer {
   row-gap: 2.4rem;
 }
 
+.footer-text a,
+.footer-text span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 footer span {
   color: #575757;
 }
@@ -495,4 +516,8 @@ footer p {
 
 footer img {
   filter: brightness(80%);
+}
+
+footer .logo-div a {
+  color: #575757 !important;
 }
