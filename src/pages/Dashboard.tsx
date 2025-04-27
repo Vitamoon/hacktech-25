@@ -161,7 +161,7 @@ const Dashboard: React.FC = () => {
           // value={stats.highAlertZipCodes}
           value={22}
           // trend={stats.highAlertZipCodes > 0 ? 100 : 0}
-          trend={86}
+          trend={14}
           trendLabel="In lake danger zones"
           icon={<AlertTriangle className="w-6 h-6" />}
           color="red"
@@ -171,7 +171,7 @@ const Dashboard: React.FC = () => {
           // value={stats.lowAlertZipCodes}
           value={136}
           // trend={stats.lowAlertZipCodes > 0 ? 100 : 0}
-          trend={14}
+          trend={86}
           trendLabel="In extended risk zones"
           icon={<AlertTriangle className="w-6 h-6" />}
           color="orange"
