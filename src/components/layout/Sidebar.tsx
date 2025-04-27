@@ -19,13 +19,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         <div className="flex flex-col items-center mb-2">
           <img 
             src="/logo.png" 
-            alt="Watered-down Properties Logo" 
+            alt="Watered-Down Properties Logo" 
             className="w-64 h-64 mb-2"
           />
           <span className="flex items-center text-xl font-medium text-white pl-6">
             {/* <BarChart2 className="w-6 h-6 mr-2" /> */}
             
-            Watered-down Properties
+            Watered-Down Properties
           </span>
         </div>
         <button
