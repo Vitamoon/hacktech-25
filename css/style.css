@@ -533,3 +533,8 @@ footer .logo-div a {
   font-size: 1.5rem;
   font-weight: 900;
 }
+
+.footer-btn .btn {
+  padding: 2rem 4rem;
+  font-size: 4rem;
+}
